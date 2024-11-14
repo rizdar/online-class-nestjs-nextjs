@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum user_type {
+  admin
+  murid
+  mentor
+}
+
+model users {
+  id String @id @db.Uuid() @default(dbgenerated("gen_random_uuid()"))
+  name String
+  email String
+  phone String?
+  password String
+  avatar String?
+  user_type user_type @default(murid)
+  is_active Boolean @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  meeting_class_mentor  meeting_class[] @relation("mentor_user")
+  meeting_class_admin meeting_class[] @relation("admin_user")
+  class_user class_user[]
+}
+
+model forgot_password {
+  id String @id @db.Uuid() @default(dbgenerated("gen_random_uuid()"))
+  email String @unique
+  token String?
+  expired_at DateTime?
+}
+
+enum class_status {
+  pending
+  published
+  cancel
+}
+
+model meeting_class {
+  id String @id @db.Uuid() @default(dbgenerated("gen_random_uuid()"))
+  class_name String?
+  class_description String?
+  class_status class_status @default(pending)
+  image String?
+  start_time DateTime
+  end_time DateTime
+  mentor_id String @db.Uuid()
+  created_by_id String @db.Uuid()
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  mentor users? @relation("mentor_user", fields: [mentor_id], references: [id])
+  created_by users? @relation("admin_user", fields: [created_by_id], references: [id])
+  class_user class_user[]
+  zoom zoom[]
+}
+
+model class_user {
+   id String @id @db.Uuid() @default(dbgenerated("gen_random_uuid()"))
+   user_id String @db.Uuid()
+   class_id String @db.Uuid()
+   has_join Boolean @default(false)
+   created_at DateTime @default(now())
+
+   user users? @relation(fields: [user_id], references: [id])
+   meeting_class meeting_class? @relation(fields: [class_id], references: [id])
+}
+
+model zoom {
+   id String @id @db.Uuid() @default(dbgenerated("gen_random_uuid()"))
+   topic_name String
+   class_id String @db.Uuid()
+   description String?
+   meeting_number String
+   schedule_at DateTime
+   duration Int
+   credentials Json
+   created_at DateTime @default(now())
+   updated_at DateTime  @default( now())
+
+   meeting_class meeting_class? @relation(fields: [class_id], references: [id])
+}
