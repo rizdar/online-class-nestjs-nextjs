@@ -50,7 +50,7 @@ export class UserRepository {
     return false;
   }
 
-  async updateUserByID(id: string, data: Prisma.usersCreateInput) {
+  async updateUserByID(id: string, data: Prisma.usersUpdateInput) {
     return await this.table.update({
       where: {
         id,
