@@ -58,4 +58,10 @@ export class UserRepository {
       data,
     });
   }
+
+  async create(data: Prisma.usersCreateInput) {
+    return await this.table.create({
+      data: data,
+    });
+  }
 }

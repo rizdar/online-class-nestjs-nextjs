@@ -8,6 +8,7 @@ import { RepositoriesModule } from './repositories/repositories.module';
 import { ConfigModule } from './config/config.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { HttpLoggerModule } from './logger/http-logger/http-logger.module';
+import { JwtAuthModule } from './libs/jwt-auth/jwt-auth.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { HttpLoggerModule } from './logger/http-logger/http-logger.module';
     ConfigModule,
     PrismaModule,
     HttpLoggerModule,
+    JwtAuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
