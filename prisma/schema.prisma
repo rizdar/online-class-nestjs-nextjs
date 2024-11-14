@@ -89,7 +89,7 @@ model zoom {
    duration Int
    credentials Json
    created_at DateTime @default(now())
-   updated_at DateTime  @default( now())
+   updated_at DateTime  @default(now())
 
    meeting_class meeting_class? @relation(fields: [class_id], references: [id])
 }
