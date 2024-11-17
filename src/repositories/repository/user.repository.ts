@@ -22,12 +22,37 @@ export class UserRepository {
     return await this.table.findFirst({
       where: {
         id,
+        is_active: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        avatar: true,
+        user_type: true,
+        created_at: true,
+        is_active: true,
       },
     });
   }
 
   async findAllUsers() {
-    return await this.table.findMany();
+    return await this.table.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        avatar: true,
+        user_type: true,
+        created_at: true,
+        is_active: true,
+      },
+      where: {
+        is_active: true,
+      },
+    });
   }
 
   async activateByEmail(email: string) {
