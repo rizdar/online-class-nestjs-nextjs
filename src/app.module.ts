@@ -9,6 +9,8 @@ import { ConfigModule } from './config/config.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { HttpLoggerModule } from './logger/http-logger/http-logger.module';
 import { JwtAuthModule } from './libs/jwt-auth/jwt-auth.module';
+import { CacheModule } from './libs/cache/cache.module';
+import { ZoomModule } from './libs/zoom/zoom.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { JwtAuthModule } from './libs/jwt-auth/jwt-auth.module';
     PrismaModule,
     HttpLoggerModule,
     JwtAuthModule,
+    CacheModule,
+    ZoomModule,
   ],
   controllers: [AppController],
   providers: [AppService],
