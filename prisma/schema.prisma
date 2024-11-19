@@ -55,12 +55,15 @@ model meeting_class {
   class_description String?
   class_status class_status @default(pending)
   image String?
+  image_id String?
+  image_path String?
   start_time DateTime
   end_time DateTime
   mentor_id String @db.Uuid()
   created_by_id String @db.Uuid()
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
+  is_deleted Boolean @default(false)
 
   mentor users? @relation("mentor_user", fields: [mentor_id], references: [id])
   created_by users? @relation("admin_user", fields: [created_by_id], references: [id])

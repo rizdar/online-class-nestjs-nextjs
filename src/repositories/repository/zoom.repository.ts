@@ -22,9 +22,9 @@ export class ZoomRepository {
     });
   }
 
-  async create(data: Prisma.zoomCreateInput) {
+  async create(data: Prisma.zoomCreateArgs) {
     return this.table.create({
-      data,
+      data: data.data,
     });
   }
 

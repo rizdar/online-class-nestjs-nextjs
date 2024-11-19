@@ -11,13 +11,52 @@ export class MeetingClassRepository {
   }
 
   async findAll() {
-    return await this.table.findMany();
+    return await this.table.findMany({
+      where: {
+        is_deleted: false,
+      },
+      include: {
+        class_user: {
+          select: {
+            user_id: true,
+            class_id: true,
+            has_join: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 
   async findByID(id: string) {
     return await this.table.findFirst({
       where: {
         id,
+        is_deleted: false,
+      },
+      include: {
+        class_user: {
+          select: {
+            user_id: true,
+            class_id: true,
+            has_join: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                avatar: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -41,5 +80,38 @@ export class MeetingClassRepository {
     }
 
     return null;
+  }
+
+  async addUser(meeting_id: string, user_id: string) {
+    const checkUser = await this.prisma.class_user.findFirst({
+      where: {
+        user_id: user_id,
+        class_id: meeting_id,
+      },
+    });
+    if (!checkUser) {
+      return await this.prisma.class_user.create({
+        data: {
+          user_id: user_id,
+          class_id: meeting_id,
+        },
+      });
+    }
+  }
+
+  async removeUser(meeting_id: string, user_id: string) {
+    const checkUser = await this.prisma.class_user.findFirst({
+      where: {
+        user_id: user_id,
+        class_id: meeting_id,
+      },
+    });
+    if (checkUser) {
+      return await this.prisma.class_user.delete({
+        where: {
+          id: checkUser.id,
+        },
+      });
+    }
   }
 }
