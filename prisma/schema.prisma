@@ -20,26 +20,36 @@ enum user_type {
 }
 
 model users {
-  id String @id @db.Uuid() @default(dbgenerated("gen_random_uuid()"))
-  name String
-  email String
-  phone String?
-  password String
-  avatar String?
-  user_type user_type @default(murid)
-  is_active Boolean @default(true)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
+  name             String
+  email            String
+  phone            String?
+  password         String
+  avatar           String?
+  avatar_path      String?
+  avatar_media_id  String?   @db.Uuid
+  user_type        user_type @default(murid)
+  profession       String?
+  description      String?
+  about            String?
+  medsos_facebook  String?
+  medsos_instagram String?
+  medsos_linkedin  String?
+  medsos_wa        String?
+  is_active        Boolean   @default(true)
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @default(now())
 
-  meeting_class_mentor  meeting_class[] @relation("mentor_user")
-  meeting_class_admin meeting_class[] @relation("admin_user")
-  class_user class_user[]
+  meeting_class_mentor meeting_class[] @relation("mentor_user")
+  meeting_class_admin  meeting_class[] @relation("admin_user")
+  class_user           class_user[]
+  media                media?          @relation(fields: [avatar_media_id], references: [id])
 }
 
 model forgot_password {
-  id String @id @db.Uuid() @default(dbgenerated("gen_random_uuid()"))
-  email String @unique
-  token String?
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
+  email      String    @unique
+  token      String?
   expired_at DateTime?
 }
 
@@ -50,49 +60,63 @@ enum class_status {
 }
 
 model meeting_class {
-  id String @id @db.Uuid() @default(dbgenerated("gen_random_uuid()"))
-  class_name String?
+  id                String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
+  class_name        String?
   class_description String?
-  class_status class_status @default(pending)
-  image String?
-  image_id String?
-  image_path String?
-  start_time DateTime
-  end_time DateTime
-  mentor_id String @db.Uuid()
-  created_by_id String @db.Uuid()
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-  is_deleted Boolean @default(false)
+  class_status      class_status @default(pending)
+  image             String?
+  image_id          String?      @db.Uuid
+  image_path        String?
+  start_time        DateTime
+  end_time          DateTime
+  mentor_id         String       @db.Uuid()
+  created_by_id     String       @db.Uuid()
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @default(now())
+  is_deleted        Boolean      @default(false)
 
-  mentor users? @relation("mentor_user", fields: [mentor_id], references: [id])
-  created_by users? @relation("admin_user", fields: [created_by_id], references: [id])
+  media      media?       @relation(fields: [image_id], references: [id])
+  mentor     users?       @relation("mentor_user", fields: [mentor_id], references: [id])
+  created_by users?       @relation("admin_user", fields: [created_by_id], references: [id])
   class_user class_user[]
-  zoom zoom[]
+  zoom       zoom[]
 }
 
 model class_user {
-   id String @id @db.Uuid() @default(dbgenerated("gen_random_uuid()"))
-   user_id String @db.Uuid()
-   class_id String @db.Uuid()
-   has_join Boolean @default(false)
-   created_at DateTime @default(now())
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
+  user_id    String   @db.Uuid()
+  class_id   String   @db.Uuid()
+  has_join   Boolean  @default(false)
+  created_at DateTime @default(now())
 
-   user users? @relation(fields: [user_id], references: [id])
-   meeting_class meeting_class? @relation(fields: [class_id], references: [id])
+  user          users?         @relation(fields: [user_id], references: [id])
+  meeting_class meeting_class? @relation(fields: [class_id], references: [id])
 }
 
 model zoom {
-   id String @id @db.Uuid() @default(dbgenerated("gen_random_uuid()"))
-   topic_name String
-   class_id String @db.Uuid()
-   description String?
-   meeting_number String
-   schedule_at DateTime
-   duration Int
-   credentials Json
-   created_at DateTime @default(now())
-   updated_at DateTime  @default(now())
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
+  topic_name     String
+  class_id       String   @db.Uuid()
+  description    String?
+  meeting_number String
+  schedule_at    DateTime
+  duration       Int
+  credentials    Json
+  created_at     DateTime @default(now())
+  updated_at     DateTime @default(now())
 
-   meeting_class meeting_class? @relation(fields: [class_id], references: [id])
+  meeting_class meeting_class? @relation(fields: [class_id], references: [id])
+}
+
+model media {
+  id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  media_path        String?
+  media_url         String?
+  media_name        String?
+  media_origin_name String?
+  media_type        String?
+  created_at        DateTime        @default(now())
+  updated_at        DateTime        @default(now())
+  users             users[]
+  meeting_class     meeting_class[]
 }

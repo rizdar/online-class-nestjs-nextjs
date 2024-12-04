@@ -9,7 +9,7 @@ import { RepositoriesService } from 'src/repositories/repositories.service';
 import { AddUserDto } from './dto/add-user.dto';
 import { UtilsService } from 'src/utils/utils.service';
 import { ZoomService } from 'src/libs/zoom/zoom.service';
-import { class_status } from '@prisma/client';
+import { class_status, user_type } from '@prisma/client';
 
 @Injectable()
 export class MeetingClassService {
@@ -99,5 +99,35 @@ export class MeetingClassService {
         throw new InternalServerErrorException('Publish meeting error');
       }
     }
+  }
+
+  async findClassByUserAssign(id_user: string, level: user_type) {
+    if (level == 'mentor') {
+      return await this.repo.meetingClass.findClassByUserMentor(id_user);
+    } else if (level == 'murid') {
+      return await this.repo.meetingClass.findClassByUserAssign(id_user);
+    } else {
+      return [];
+    }
+  }
+
+  async joinMeeting(class_id: string, user_id: string) {
+    return await this.repo.meetingClass.joinMeeting(class_id, user_id);
+  }
+
+  async checkJoinMeetingClass(meeting_class_id: string, user_id: string, level: user_type) {
+    if (level == "mentor") {
+      return await this.repo.meetingClass.checkJoinMeetingClassMentor(meeting_class_id, user_id);
+    } else if (level == "murid") {
+      return await this.repo.meetingClass.checkJoinMeetingClassMurid(meeting_class_id, user_id);
+    }
+    return null;
+  }
+
+  async generateJoinToken(meeting_number: any, role: number) {
+    return await this.zoom.generateTokenJoin({
+      role: role,
+      meeting_number: meeting_number
+    })
   }
 }

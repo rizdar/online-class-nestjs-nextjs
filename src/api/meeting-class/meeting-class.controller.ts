@@ -46,7 +46,7 @@ export class MeetingClassController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
+  @Get('detail/:id')
   async findOne(@Param('id') id: string) {
     return this.util.response.json({
       data: await this.meetingClassService.findOne(id),
@@ -103,5 +103,52 @@ export class MeetingClassController {
       data: await this.meetingClassService.publish(meeting_id),
       message: 'Publish meeting class success',
     });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('class-by-user')
+  async findClassByUserAssign(@Req() req) {
+    const user_id = req.user.user_id;
+    const user_type = req.user.user_type;
+    return this.util.response.json({
+      data: await this.meetingClassService.findClassByUserAssign(user_id, user_type),
+      message: "get all meeting success"
+    });
+  }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Post('join-meeting/:class_id')
+  async joinMeeting(@Req() req, @Param('class_id') class_id) {
+    const user_id = req.user.user_id;
+    return this.util.response.json({
+      data: await this.meetingClassService.joinMeeting(class_id, user_id),
+      message: "Join meeting success"
+    });
+  }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Get('check-join-meeting/:meeting_id')
+  async checkJoinMeetingClass(@Req() req, @Param('meeting_id') meeting_id) {
+    const user_id = req.user.user_id;
+    const user_type = req.user.user_type;
+    return this.util.response.json({
+      data: await this.meetingClassService.checkJoinMeetingClass(meeting_id, user_id, user_type),
+      message: "Check join meeting success"
+    });
+  }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Get('generate-join-token/:meeting_number/:role')
+  async generateJoinToken(@Param('meeting_number') meeting_number, @Param('role') role) {
+    const joinToken = await this.meetingClassService.generateJoinToken(+meeting_number, +role);
+    return await this.util.response.json({
+      data: {
+        join_token: joinToken
+      },
+      message: "Generate join token success"
+    })
   }
 }

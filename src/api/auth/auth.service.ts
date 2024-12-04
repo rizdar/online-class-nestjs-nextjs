@@ -57,6 +57,7 @@ export class AuthService {
             sub: checkUser.id,
             email: checkUser.email,
             name: checkUser.name,
+            user_type: checkUser.user_type,
             avatat: checkUser.avatar,
           },
           {
@@ -68,6 +69,7 @@ export class AuthService {
           id: checkUser.id,
           name: checkUser.name,
           email: checkUser.email,
+          user_type: checkUser.user_type,
           avatar: checkUser.avatar,
         },
       };

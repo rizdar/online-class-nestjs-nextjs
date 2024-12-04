@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import {user_type}  from '@prisma/client';
 
 @Injectable()
 export class UserRepository {
@@ -45,9 +46,11 @@ export class UserRepository {
         email: true,
         phone: true,
         avatar: true,
+        avatar_media_id: true,
+        avatar_path: true,
         user_type: true,
         created_at: true,
-        is_active: true,
+        is_active: true
       },
       where: {
         is_active: true,
@@ -88,5 +91,25 @@ export class UserRepository {
     return await this.table.create({
       data: data,
     });
+  }
+
+  async findUserByLevel(user_type: user_type) {
+    return await this.table.findMany({
+      where: {
+        user_type: user_type
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        avatar: true,
+        avatar_media_id: true,
+        avatar_path: true,
+        user_type: true,
+        created_at: true,
+        is_active: true
+      }
+    })
   }
 }

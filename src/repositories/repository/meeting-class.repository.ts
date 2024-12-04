@@ -16,6 +16,16 @@ export class MeetingClassRepository {
         is_deleted: false,
       },
       include: {
+        mentor: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true,
+            avatar_media_id: true,
+            avatar_path: true,
+          },
+        },
         class_user: {
           select: {
             user_id: true,
@@ -42,6 +52,16 @@ export class MeetingClassRepository {
         is_deleted: false,
       },
       include: {
+        mentor: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true,
+            avatar_media_id: true,
+            avatar_path: true,
+          },
+        },
         class_user: {
           select: {
             user_id: true,
@@ -113,5 +133,149 @@ export class MeetingClassRepository {
         },
       });
     }
+  }
+
+  async findClassByUserAssign(user_id: string) {
+    const user_assign = await this.prisma.class_user.findMany({
+      where: {
+        user_id,
+      },
+    });
+
+    const meeting_class_ids = user_assign.map((item) => item.class_id);
+
+    return await this.table.findMany({
+      where: {
+        id: {
+          in: meeting_class_ids,
+        },
+      },
+      include: {
+        mentor: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true,
+            avatar_media_id: true,
+            avatar_path: true,
+          },
+        },
+      },
+    });
+  }
+
+  async findClassByUserMentor(user_id: string) {
+    return this.table.findMany({
+      where: {
+        mentor_id: user_id,
+      },
+      include: {
+        mentor: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true,
+            avatar_media_id: true,
+            avatar_path: true,
+          },
+        },
+      },
+    });
+  }
+
+  async joinMeeting(class_id: string, user_id: string) {
+    const user_assign = await this.prisma.class_user.findFirst({
+      where: {
+        user_id: user_id,
+        class_id: class_id
+      }
+    });
+    if (user_assign) {
+      return await this.prisma.class_user.update({
+        where: {
+          id: user_assign.id
+        },
+        data: {
+          has_join: true
+        }
+      })
+    }
+    return null;
+  }
+
+  async checkJoinMeetingClassMurid(class_id: string, user_id: string) {
+    const user_assign = await this.prisma.class_user.findFirst({
+      where: {
+        user_id: user_id,
+        class_id: class_id
+      }
+    });
+    if (user_assign) {
+      return await this.table.findFirst({
+        where: {
+          id: class_id
+        },
+        include: {
+          zoom: true,
+          mentor: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              phone: true,
+              avatar: true,
+              avatar_media_id: true,
+              avatar_path: true,
+              user_type: true,
+              created_at: true,
+              is_active: true,
+              profession: true,
+              description: true,
+              about: true,
+              medsos_facebook: true,
+              medsos_instagram: true,
+              medsos_linkedin: true,
+              medsos_wa: true
+            }
+          }
+        }
+      })
+    }
+    return null;
+  }
+
+  async checkJoinMeetingClassMentor(class_id: string, user_id: string) {
+    return await this.table.findFirst({
+      where: {
+        id: class_id,
+        mentor_id: user_id
+      },
+      include: {
+        zoom: true,
+        mentor: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            avatar: true,
+            avatar_media_id: true,
+            avatar_path: true,
+            user_type: true,
+            created_at: true,
+            is_active: true,
+            profession: true,
+            description: true,
+            about: true,
+            medsos_facebook: true,
+            medsos_instagram: true,
+            medsos_linkedin: true,
+            medsos_wa: true
+          }
+        }
+      }
+    })
   }
 }
